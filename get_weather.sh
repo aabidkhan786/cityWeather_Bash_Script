@@ -1,6 +1,12 @@
 #!/bin/bash
-getdate=$(jq .current_condition[0].localObsDateTime weather.json)
-getweather=$(jq .current_condition[0].weatherDesc[0].value weather.json)
-getC=$(jq .current_condition[0].FeelsLikeC weather.json)
-getF=$(jq .current_condition[0].FeelsLikeF weather.json)
-echo "On $getdate London is set to be $getweather with the temperature feels like $getC C | $getF F"
+if [[ $1 == '' ]]
+then
+    echo "You have to give city name as argument like: bash get_weather.sh city-name"
+else
+    weatherData=$(curl -s https://wttr.in/$1?format=j1)
+    date=$(echo $weatherData | jq '.current_condition[0].localObsDateTime')
+    cel=$(echo $weatherData | jq '.current_condition[0].FeelsLikeC')
+    far=$(echo $weatherData | jq '.current_condition[0].FeelsLikeF')
+    desc=$(echo $weatherData | jq '.current_condition[0].weatherDesc[0].value')
+    echo "On $date $1 is set to be $desc with the temperature feels like $cel C | $far F"
+fi 
